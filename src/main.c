@@ -45,35 +45,26 @@ void call(State *state) {
     int pos;
 
     while ((tok = getc(state->fp)) != EOF) {
-        // Skip depth is active. Do nothing except nested loop handling.
         if (state->skd) {
             if (tok == '[') state->skd ++;
             if (tok == ']') state->skd --;
             continue;
         }
-
-        // Handle a loop that will cycle at least one time.
-        if (tok == '[' && *state->ptr) {
-            pos = ftell(state->fp);
-            while (*state->ptr) {
-                fseek(state->fp, pos, 0);
-                call(state);
+        if (tok == '[') {
+            if (*state->ptr) {
+                pos = ftell(state->fp);
+                do {
+                    fseek(state->fp, pos, 0);
+                    call(state);
+                } while (*state->ptr);
+            } else {
+                state->skd = 1;
             }
             continue;
         }
-
-        // Handle a loop that will not cycle. Enables skip depth.
-        if (tok == '[') {
-            state->skd = 1;
-            continue;
-        }
-
-        // Ending a loop should return back to the parent call stack.
         if (tok == ']') {
             return;
         }
-
-        // Handle pointer arithmetic and I/O.
         switch (tok) {
             case '>': state->ptr ++; break;
             case '<': state->ptr --; break;
