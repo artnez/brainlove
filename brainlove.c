@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_MEMORY 1048576
+#define MAX_MEMORY 30000
 
 typedef struct {
     FILE *fp;  // stream to parse
@@ -12,7 +12,7 @@ typedef struct {
     int skd;   // skip depth
 } State;
 
-void call(State *state);
+void run(State *state);
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     state->ptr = state->mem;
     state->skd = 0;
 
-    call(state);
+    run(state);
 
     free(state->mem);
     free(state);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void call(State *state) {
+void run(State *state) {
     char tok;
     int pos;
 
@@ -50,21 +50,6 @@ void call(State *state) {
             if (tok == ']') state->skd --;
             continue;
         }
-        if (tok == '[') {
-            if (*state->ptr) {
-                pos = ftell(state->fp);
-                do {
-                    fseek(state->fp, pos, 0);
-                    call(state);
-                } while (*state->ptr);
-            } else {
-                state->skd = 1;
-            }
-            continue;
-        }
-        if (tok == ']') {
-            return;
-        }
         switch (tok) {
             case '>': state->ptr ++; break;
             case '<': state->ptr --; break;
@@ -72,6 +57,17 @@ void call(State *state) {
             case '-': (*state->ptr) --; break;
             case '.': putchar(*state->ptr); break;
             case ',': *state->ptr = getchar(); break;
+            case ']': return;
+            case '[':
+                if (!*state->ptr) {
+                    state->skd = 1;
+                    continue;
+                }
+                pos = ftell(state->fp);
+                do {
+                    fseek(state->fp, pos, 0);
+                    run(state);
+                } while (*state->ptr);
         }
     }
 }

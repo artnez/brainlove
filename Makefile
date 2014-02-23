@@ -8,7 +8,7 @@ debug: brainlove
 build: CFLAGS += -O3
 build: brainlove
 
-brainlove: src/*.c
+brainlove: *.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
