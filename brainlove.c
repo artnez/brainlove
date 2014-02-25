@@ -50,6 +50,18 @@ void run(State *state) {
             if (tok == ']') state->skd --;
             continue;
         }
+        if (tok == '[') {
+            if (!*state->ptr) {
+                state->skd = 1;
+                continue;
+            }
+            pos = ftell(state->fp);
+            do {
+                fseek(state->fp, pos, 0);
+                run(state);
+            } while (*state->ptr);
+            continue;
+        }
         switch (tok) {
             case '>': state->ptr ++; break;
             case '<': state->ptr --; break;
@@ -58,16 +70,6 @@ void run(State *state) {
             case '.': putchar(*state->ptr); break;
             case ',': *state->ptr = getchar(); break;
             case ']': return;
-            case '[':
-                if (!*state->ptr) {
-                    state->skd = 1;
-                    continue;
-                }
-                pos = ftell(state->fp);
-                do {
-                    fseek(state->fp, pos, 0);
-                    run(state);
-                } while (*state->ptr);
         }
     }
 }
