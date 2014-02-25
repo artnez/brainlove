@@ -18,4 +18,11 @@ Brainfuck in brainfuck:
 $ cat test/hello.bf | ./brainlove test/bf.bf
 ```
 
+Julia
+-----
+
+```bash
+$ ./brainlove.jl test/fib.bf
+```
+
 [brainfuck]: http://en.wikipedia.org/wiki/Brainfuck

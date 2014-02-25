@@ -1,3 +1,5 @@
+#! /usr/bin/env julia
+
 if length(ARGS) == 0
     write(STDERR, "Usage: brainlove SOURCE_FILE\n")
     exit(1)
